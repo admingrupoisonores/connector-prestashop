@@ -338,11 +338,17 @@ class TemplateMapper(Component):
     def barcode(self, record):
         if self.has_combinations(record):
             return {}
+
         barcode = record.get("barcode") or record.get("ean13")
         if barcode in ["", "0"]:
             return {}
-        if self.env["barcode.nomenclature"].check_ean(barcode):
+
+        barcode_nomenclature = self.env["barcode.nomenclature"]
+        if barcode_nomenclature.check_encoding(
+            barcode, "ean13"
+        ) or barcode_nomenclature.check_encoding(barcode, "ean8"):
             return {"barcode": barcode}
+
         return {}
 
     def _get_tax_ids(self, record):

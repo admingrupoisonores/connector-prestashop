@@ -49,6 +49,17 @@ class ProductTemplate(models.Model):
             ).recompute_prestashop_qty()
         return True
 
+    @api.model
+    def create(self, vals):
+        if "type" in vals:
+            if vals["type"] == "product":
+                vals["detailed_type"] = "product"
+            elif vals["type"] == "consu":
+                vals["detailed_type"] = "consu"
+            elif vals["type"] == "service":
+                vals["detailed_type"] = "service"
+        return super(ProductTemplate, self).create(vals)
+
 
 class ProductQtyMixin(models.AbstractModel):
     _name = "prestashop.product.qty.mixin"

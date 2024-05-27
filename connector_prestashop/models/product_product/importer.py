@@ -298,14 +298,20 @@ class ProductCombinationMapper(Component):
     @mapping
     def barcode(self, record):
         barcode = record.get("barcode") or record.get("ean13")
-        check_ean = self.env["barcode.nomenclature"].check_ean
+        barcode_nomenclature_model = self.env["barcode.nomenclature"]
+
+        def is_valid_ean(barcode):
+            """Validates if a barcode is a valid EAN."""
+            return barcode_nomenclature_model.check_encoding(barcode, "ean13")
+
         if barcode in ["", "0"]:
             backend_adapter = self.component(
                 usage="backend.adapter", model_name="prestashop.product.template"
             )
             template = backend_adapter.read(record["id_product"])
             barcode = template.get("barcode") or template.get("ean13")
-        if barcode and barcode != "0" and check_ean(barcode):
+
+        if barcode and barcode != "0" and is_valid_ean(barcode):
             return {"barcode": barcode}
         return {}
 
