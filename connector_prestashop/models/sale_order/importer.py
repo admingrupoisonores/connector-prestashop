@@ -177,7 +177,7 @@ class SaleOrderImportMapper(Component):
         return orders
 
     def _get_discounts_lines(self, record):
-        if record["total_discounts"] == "0.00":
+        if record["total_discounts"] == "0.000000":
             return []
         adapter = self.component(
             usage="backend.adapter", model_name="prestashop.sale.order.line.discount"
